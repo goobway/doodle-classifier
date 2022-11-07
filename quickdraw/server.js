@@ -13,6 +13,7 @@ let cats = [];
 fs.createReadStream('cat.ndjson')
     .pipe(ndjson.parse())
     .on('data', function (obj) {
+        //console.log(cat);
         cats.push(obj);
     })
 
