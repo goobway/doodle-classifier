@@ -1,6 +1,6 @@
 
 size(280, 280);
-byte[] data = loadBytes("rainbow.npy");
+byte[] data = loadBytes("train.npy");
 println(data.length);
 
 //int total = (data.length - 80) / 784;
@@ -28,4 +28,4 @@ for (int n = 0; n < total; n++) {
   //image(img, x, y);
 }
 
-saveBytes("rainbows1000.bin", outdata);
+saveBytes("trains1000.bin", outdata);
