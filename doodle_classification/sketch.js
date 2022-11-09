@@ -65,7 +65,7 @@ function testAll(testing) {
 
     for (let i = 0; i < testing.length; i++) {
         let data = testing[i];
-        let inputs = data.map(x => x / 255.0);
+        let inputs = Array.from(data).map(x => x / 255.0);
         let label = testing[i].label;
         let targets = [0, 0, 0];
         targets[label] = 1;
@@ -78,13 +78,22 @@ function testAll(testing) {
             correct++;
         }
     }
-    let percent = correct / testing.length;
+    let percent = 100 * correct / testing.length;
     return percent;
+}
+
+/* drawing function */
+function draw() {
+    strokeWeight(8);
+    stroke(0);
+    if (mouseIsPressed) {
+        line(pmouseX, pmouseY, mouseX, mouseY);
+    }
 }
 
 function setup() {
     createCanvas(280, 280);
-    background(0);
+    background(255);
     prepareData(cats, cats_data, CAT);
     prepareData(rainbows, rainbows_data, RAINBOW);
     prepareData(trains, trains_data, TRAIN);
@@ -108,11 +117,54 @@ function setup() {
     testing = testing.concat(rainbows.testing);
     testing = testing.concat(trains.testing);
 
-    /* train data */
-    for (let i = 1; i < 6; i++) {
+    let trainButton = select('#train');
+    epochCounter = 0;
+    trainButton.mousePressed(function () {
         trainEpoch(training);
-        console.log("Epoch: " + i);
+        epochCounter++;
+        console.log("Epoch: " + epochCounter)
+    });
+
+    let testButton = select('#test');
+    testButton.mousePressed(function () {
         let percent = testAll(testing);
-        console.log("% correct: " + percent);
-    }
+        console.log("Percent: " + nf(percent, 2, 2) + "%");
+    });
+
+    let guessButton = select('#guess');
+    guessButton.mousePressed(function () {
+        let inputs = [];
+        let img = get(); /* grab all pixels from image */
+        img.resize(28, 28);
+        img.loadPixels();
+        for (let i = 0; i < len; i++) {
+            let bright = img.pixels[i * 4];
+            inputs[i] = (255 - bright) / 255.0;
+        }
+
+        /* classify the input */
+        let guess = nn.predict(inputs);
+        let m = max(guess);
+        let classification = guess.indexOf(m);
+        if (classification === CAT) {
+            console.log("cat");
+        } else if (classification === RAINBOW) {
+            console.log("rainbow");
+        } else if (classification === TRAIN) {
+            console.log("train");
+        }
+    });
+
+    let clearButton = select('#clear');
+    clearButton.mousePressed(function () {
+        background(255);
+    });
+
+    /* train data */
+    // for (let i = 1; i < 6; i++) {
+    //     trainEpoch(training);
+    //     console.log("Epoch: " + i);
+    //     let percent = testAll(testing);
+    //     console.log("% correct: " + percent);
+    // }
 }
