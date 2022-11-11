@@ -5,15 +5,18 @@ const total_data = 1000;
 const CAT = 0;
 const RAINBOW = 1;
 const TRAIN = 2;
+const FISH = 3;
 
 let cats_data;
 let trains_data;
 let rainbows_data;
+let fishes_data;
 
 /* object categories */
 let cats = {};
 let trains = {};
 let rainbows = {};
+let fishes = {};
 
 /* neural network */
 let nn;
@@ -23,6 +26,7 @@ function preload() {
     cats_data = loadBytes('data/cats1000.bin')
     trains_data = loadBytes('data/trains1000.bin')
     rainbows_data = loadBytes('data/rainbows1000.bin')
+    fishes_data = loadBytes('data/fishes1000.bin')
 }
 
 /* split data into training and testing sets */
@@ -51,7 +55,7 @@ function trainEpoch(training) {
         let data = training[i];
         let inputs = data.map(x => x / 255.0);
         let label = training[i].label;
-        let targets = [0, 0, 0];
+        let targets = [0, 0, 0, 0];
         targets[label] = 1;
 
         /* compare guess to target, update weights */
@@ -67,7 +71,7 @@ function testAll(testing) {
         let data = testing[i];
         let inputs = Array.from(data).map(x => x / 255.0);
         let label = testing[i].label;
-        let targets = [0, 0, 0];
+        let targets = [0, 0, 0, 0];
         targets[label] = 1;
         let guess = nn.predict(inputs);
 
@@ -97,25 +101,28 @@ function setup() {
     prepareData(cats, cats_data, CAT);
     prepareData(rainbows, rainbows_data, RAINBOW);
     prepareData(trains, trains_data, TRAIN);
+    prepareData(fishes, fishes_data, FISH);
 
     /*  making the neural network...
         inputs: 784
         hidden nodes: 64
         outputs: 3
     */
-    nn = new NeuralNetwork(784, 64, 3);
+    nn = new NeuralNetwork(784, 64, 4);
 
     /* add all data to array and shuffle */
     let training = [];
     training = training.concat(cats.training);
     training = training.concat(rainbows.training);
     training = training.concat(trains.training);
+    training = training.concat(fishes.training);
 
     /* add all data to array and shuffle */
     let testing = [];
     testing = testing.concat(cats.testing);
     testing = testing.concat(rainbows.testing);
     testing = testing.concat(trains.testing);
+    testing = testing.concat(fishes.testing);
 
     let trainButton = select('#train');
     epochCounter = 0;
@@ -152,6 +159,8 @@ function setup() {
             console.log("rainbow");
         } else if (classification === TRAIN) {
             console.log("train");
+        } else if (classification === FISH) {
+            console.log("fish");
         }
     });
 

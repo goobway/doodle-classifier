@@ -1,0 +1,4 @@
+cat.npy
+fish.npy
+rainbow.npy
+train.npy
